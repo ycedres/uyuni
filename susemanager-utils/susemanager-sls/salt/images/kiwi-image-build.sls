@@ -55,24 +55,18 @@ mgr_buildimage_prepare_activation_key_in_source:
 {%- endfor -%}
 {%- endmacro %}
 
-mgr_buildimage_kiwi_prepare:
+mgr_buildimage_kiwi_build:
   cmd.run:
-    - name: "{{ kiwi }} --logfile={{ root_dir }}/prepare.log --shared-cache-dir={{ cache_dir }} {{ kiwi_options }} system prepare --description {{ source_dir }} --root {{ chroot_dir }} {{ kiwi_params() }}"
+    - name: "{{ kiwi }} --logfile={{ root_dir }}/build.log --shared-cache-dir={{ cache_dir }} {{ kiwi_options }} system build --description {{ source_dir }} {{ kiwi_params() }} --target-dir {{ dest_dir }}"
     - require:
       - mgrcompat: mgr_buildimage_prepare_source
       - file: mgr_buildimage_prepare_activation_key_in_source
-
-mgr_buildimage_kiwi_create:
-  cmd.run:
-    - name: "{{ kiwi }} --logfile={{ root_dir }}/create.log --shared-cache-dir={{ cache_dir }} {{ kiwi_options }} system create --root {{ chroot_dir }} --target-dir  {{ dest_dir }}"
-    - require:
-      - cmd: mgr_buildimage_kiwi_prepare
 
 mgr_buildimage_kiwi_bundle:
   cmd.run:
     - name: "{{ kiwi }} result bundle --target-dir {{ dest_dir }} --id {{ bundle_id }} --bundle-dir {{ bundle_dir }}"
     - require:
-      - cmd: mgr_buildimage_kiwi_create
+      - cmd: mgr_buildimage_kiwi_build
 
 
 {%- else %}

@@ -1,3 +1,5 @@
+- Switch os image build from two phases to single build one
+  (bsc#1190076 and bsc#1193735)
 - Fix errors on calling sed -E ... by force_restart_minion
   with action chains
 - Fix problem installing/removing packages using action chains
