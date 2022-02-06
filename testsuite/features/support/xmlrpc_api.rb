@@ -33,15 +33,15 @@ class XMLRPCApiTest < XMLRPCBaseTest
   def get_count_of_api_namespace_call_list
     count = 0
     namespaces = @connection.call('api.getApiNamespaces', @sid)
-    STDOUT.puts '    Spaces found: ' + namespaces.length.to_s
+    puts '    Spaces found: ' + namespaces.length.to_s
     namespaces.each do |ns|
-      STDOUT.puts '      Analyzing ' + ns[0] + '... '
+      print '      Analyzing ' + ns[0] + '... '
       call_list = @connection.call('api.getApiNamespaceCallList', @sid, ns[0])
       if !call_list.nil?
         count += call_list.length
-        STDOUT.puts 'Done'
+        puts 'Done'
       else
-        STDOUT.puts 'Failed'
+        puts 'Failed'
       end
     end
     count

@@ -57,7 +57,7 @@ end
 Then(/^it should be possible to reach the build sources$/) do
   if $product == 'Uyuni'
     # TODO: move that internal resource to some other external location
-    log 'Sanity check not implemented, move resource to external network first'
+    STDERR.puts 'Sanity check not implemented, move resource to external network first'
   else
     url = 'http://download.suse.de/ibs/SUSE/Products/SLE-SERVER/12-SP4/x86_64/product/media.1/products.key'
     $server.run("curl --insecure --location #{url} --output /dev/null")
@@ -193,7 +193,7 @@ When(/^I query latest Salt changes on "(.*?)"$/) do |host|
   result, return_code = node.run("LANG=en_US.UTF-8 rpm -q --changelog #{salt}")
   result.split("\n")[0, 15].each do |line|
     line.force_encoding("UTF-8")
-    log line
+    puts line
   end
 end
 
@@ -204,7 +204,7 @@ When(/^I query latest Salt changes on ubuntu system "(.*?)"$/) do |host|
   result, return_code = node.run("zcat /usr/share/doc/#{salt}/#{changelog_file}")
   result.split("\n")[0, 15].each do |line|
     line.force_encoding("UTF-8")
-    log line
+    puts line
   end
 end
 
@@ -307,7 +307,7 @@ When(/^I wait until all spacewalk\-repo\-sync finished$/) do
 
     process = command_output.split("\n")[0]
     channel = process.split(' ')[5]
-    log "Reposync of channel #{channel} left running" if (reposync_left_running_streak % 60).zero?
+    STDOUT.puts "Reposync of channel #{channel} left running" if (reposync_left_running_streak % 60).zero?
     reposync_left_running_streak += 1
     sleep 1
   end
@@ -335,7 +335,7 @@ When(/^I kill all running spacewalk\-repo\-sync, excepted the ones needed to boo
     process = command_output.split("\n")[0]
     channel = process.split(' ')[5]
     if do_not_kill.include? channel
-      log "Reposync of channel #{channel} left running" if (reposync_left_running_streak % 60).zero?
+      STDOUT.puts "Reposync of channel #{channel} left running" if (reposync_left_running_streak % 60).zero?
       reposync_left_running_streak += 1
       sleep 1
       next
@@ -344,7 +344,7 @@ When(/^I kill all running spacewalk\-repo\-sync, excepted the ones needed to boo
 
     pid = process.split(' ')[0]
     $server.run("kill #{pid}", check_errors: false)
-    log "Reposync of channel #{channel} killed"
+    STDOUT.puts "Reposync of channel #{channel} killed"
   end
 end
 
@@ -369,7 +369,7 @@ When(/^I wait until the channel "([^"]*)" has been synced$/) do |channel|
       sleep 10
     end
   rescue StandardError => e
-    log e.message # It might be that the MU repository is wrong, but we want to continue in any case
+    puts e.message # It might be that the MU repository is wrong, but we want to continue in any case
   end
 end
 
@@ -448,7 +448,7 @@ Then(/^I should see "([^"]*)", "([^"]*)" and "([^"]*)" in the repo file on the "
   base_url, _code = node.run('grep "baseurl" /etc/zypp/repos.d/susemanager\:channels.repo')
   base_url = base_url.strip.split('=')[1].delete '"'
   uri = URI.parse(base_url)
-  log 'Protocol: ' + uri.scheme + '  Host: ' + uri.host + '  Port: ' + uri.port.to_s
+  puts 'Protocol: ' + uri.scheme + '  Host: ' + uri.host + '  Port: ' + uri.port.to_s
   parameters_matches = (uri.scheme == protocol && uri.host == hostname && uri.port == port.to_i)
   if !parameters_matches
     raise 'Some parameters are not as expected'
@@ -669,7 +669,7 @@ end
 When(/^I run "([^"]*)" on "([^"]*)" with logging$/) do |cmd, host|
   node = get_target(host)
   output, _code = node.run(cmd)
-  log "OUT: #{output}"
+  puts "OUT: #{output}"
 end
 
 When(/^I run "([^"]*)" on "([^"]*)" without error control$/) do |cmd, host|
@@ -968,14 +968,14 @@ When(/^I create the bootstrap repository for "([^"]*)" on the server$/) do |host
         else
           "mgr-create-bootstrap-repo --create #{channel} --with-parent-channel #{parent_channel} --with-custom-channels --flush"
         end
-  log 'Creating the boostrap repository on the server:'
-  log '  ' + cmd
+  STDOUT.puts 'Creating the boostrap repository on the server:'
+  STDOUT.puts '  ' + cmd
   $server.run(cmd)
 end
 
 When(/^I install "([^"]*)" product on the proxy$/) do |product|
   out, = $proxy.run("zypper ref && zypper --non-interactive install --auto-agree-with-licenses --force-resolution -t product #{product}")
-  log "Installed #{product} product: #{out}"
+  STDOUT.puts "Installed #{product} product: #{out}"
 end
 
 When(/^I adapt zyppconfig$/) do

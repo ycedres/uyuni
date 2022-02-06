@@ -9,7 +9,7 @@ var options = {
   jsonDir: '.',
   output: 'cucumber_report/cucumber_report.html',
   reportSuiteAsScenarios: true,
-  launchReport: true,
+  launchReport: false,
   columnLayout: 1,
   scenarioTimestamp: true,
   screenshotsDirectory: './cucumber_report/screenshots/',
