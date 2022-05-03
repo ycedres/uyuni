@@ -2166,6 +2166,7 @@ public class SystemManager extends BaseManager {
             if (server.hasEntitlement(EntitlementManager.FOREIGN)) {
                 return server;
             }
+            // TODO Exception message is not properly showing up in UI
             throw new SystemsExistException(List.of(server.getId()));
         }
         Server server = ServerFactory.createServer();
