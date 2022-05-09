@@ -52,7 +52,7 @@ spec:
             mountPath: /etc/uyuni/config.yaml
             subPath: config.yaml
             readOnly: true
-          - name: squid-cache 
+          - name: squid-cache
             mountPath: /var/cache/squid
           ports:
             - containerPort: 8088
