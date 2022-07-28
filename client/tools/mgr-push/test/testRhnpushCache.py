@@ -14,7 +14,7 @@
 #
 
 import unittest
-import rhnpush_cache
+from rhnpush import rhnpush_cache
 import time
 
 

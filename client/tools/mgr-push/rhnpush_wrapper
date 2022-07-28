@@ -3,7 +3,7 @@
 # Wrapper for rhnpush_main.py
 #
 import sys
-
+import rhnpush_main
 try:
     from rhnpush import rhnpush_main
 except ImportError:

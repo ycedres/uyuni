@@ -13,8 +13,9 @@
 # in this software or its documentation.
 #
 
-import rhnpush_config
 import unittest
+
+from rhnpush import rhnpush_config
 
 
 # pylint: disable=W0212,E1101,R0904
@@ -55,6 +56,7 @@ class RhnConfigTestCase(unittest.TestCase):
         self.userconfig._add_config_as_attr()
         self.userconfig._add_config_as_attr()
         assert self.userconfig.usage != None and self.defaultconfig.usage != None
+
 
 if __name__ == "__main__":
     unittest.main()

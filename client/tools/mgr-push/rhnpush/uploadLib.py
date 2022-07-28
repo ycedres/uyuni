@@ -755,7 +755,7 @@ def getServer(uri, proxy=None, username=None, password=None, ca_chain=None):
 def hasChannelChecksumCapability(rpc_server):
     """ check whether server supports getPackageChecksumBySession function"""
     # pylint: disable=W1505
-    if 'rpcServerOverride' in inspect.getargspec(rhnserver.RhnServer.__init__)[0]:
+    if 'rpcServerOverride' in inspect.getfullargspec(rhnserver.RhnServer.__init__)[0]:
         server = rhnserver.RhnServer(rpcServerOverride=rpc_server)
     else:
         server = rhnserver.RhnServer()

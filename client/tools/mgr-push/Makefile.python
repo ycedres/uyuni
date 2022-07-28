@@ -3,17 +3,28 @@ CURRENT_DIR := $(dir $(THIS_MAKEFILE))
 include $(CURRENT_DIR)../../../rel-eng/Makefile.python
 
 # Docker tests variables
+DOCKER_REF            = $(DOCKER_REGISTRY)/$(DOCKER_IMAGE)
 DOCKER_CONTAINER_BASE = systemsmanagement/uyuni/master/docker/containers/uyuni-master
 DOCKER_REGISTRY       = registry.opensuse.org
-DOCKER_RUN_EXPORT     = "PYTHONPATH=$PYTHONPATH"
+DOCKER_RUN_EXPORT     = "PYTHONPATH=/manager/client/tools/mgr-push/rhnpush:/manager/python/:/manager/client/tools/mgr-push:/manager/client/rhel/spacewalk-client-tools/src/"
 DOCKER_VOLUMES        = -v "$(CURDIR)/../../../:/manager"
 
 __pylint ::
 	$(call update_pip_env)
 	pylint --rcfile=pylintrc $(shell find -name '*.py') > reports/pylint.log || true
 
+__pytest ::
+	#$(MAKE) -f $(CURRENT_DIR)/Makefile.rhnpush all
+	ln -s /manager/client/tools/mgr-push/rhnpush /usr/lib64/python3.6/site-packages/rhnpush.py
+	cd test
+	pytest --disable-warnings --tb=native --color=yes -v
+
 docker_pylint ::
 	docker run --rm -e $(DOCKER_RUN_EXPORT) $(DOCKER_VOLUMES) $(DOCKER_REGISTRY)/$(DOCKER_CONTAINER_BASE)-pgsql /bin/sh -c "cd /manager/client/tools/mgr-push; make -f Makefile.python __pylint"
 
+docker_pytest ::
+	docker pull $(DOCKER_REF)
+	docker run -e $(DOCKER_RUN_EXPORT) $(DOCKER_VOLUMES) $(DOCKER_REF) /bin/sh -c "cd /manager/client/tools/mgr-push; make -f Makefile.python __pytest"
+
 docker_shell ::
-	docker run -t -i --rm -e $(DOCKER_RUN_EXPORT) $(DOCKER_VOLUMES) $(DOCKER_REGISTRY)/$(DOCKER_CONTAINER_BASE)-pgsql /bin/bash
+	docker run -t -i -e $(DOCKER_RUN_EXPORT) $(DOCKER_VOLUMES) $(DOCKER_REGISTRY)/$(DOCKER_CONTAINER_BASE)-pgsql /bin/bash

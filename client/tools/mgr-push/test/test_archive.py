@@ -18,7 +18,7 @@ import unittest
 import zipfile
 
 # test import
-import archive
+from rhnpush import archive
 
 # globals ----------------------------------------------------------------
 
