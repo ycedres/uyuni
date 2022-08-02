@@ -177,7 +177,7 @@ class UploadClass:
 
         for filename in listdir(self.options.dir):
             # only add packages
-            if filename[-3:] in ("rpm", "mpm"):
+            if filename[-3:] in ("rpm", "mpm", "deb"):
                 self.files.append(filename)
 
     def filter_excludes(self):

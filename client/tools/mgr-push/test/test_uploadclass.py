@@ -14,11 +14,9 @@ class TestUpload(TestCase):
             "sha256",
             "cd5b4348e7b76c2287a9476f3f3ef3911480fe8e872ac541ffb598186a9e9607",
         ],
-        "cadabra_2.46-4_amd64.deb": [
-            "sha256",
-            "ece4eedf7a5c65396d136b5765226e2c8b10f268c744b0ab1fa2625e35384a00",
-        ],
+        "cadabra_2.46-4_amd64.deb": ''
     }
+
     pkgs_info = {
         "4ti2_1.6.7+ds-2build2_amd64.deb": {
             "name": "4ti2",
@@ -39,6 +37,7 @@ class TestUpload(TestCase):
             "checksum": "ece4eedf7a5c65396d136b5765226e2c8b10f268c744b0ab1fa2625e35384a00",
         },
     }
+
     digest_hash = {
         "4ti2_1.6.7+ds-2build2_amd64.deb": (
             "sha256",
@@ -343,3 +342,52 @@ class TestUpload(TestCase):
             self._upload.packages()
             assert submit.called
 
+    @patch(
+        "rhnpush.rhnpush_v2.PingPackageUpload.ping", Mock(return_value=[200, "OK", http_headers])
+    )
+    @patch("rhnpush.uploadLib.listdir", MagicMock(return_value=['cadabra_2.46-4_amd64.deb']))
+    @patch("rhnpush.rhnpush_cache.RHNPushSession", MagicMock())
+    @patch("up2date_client.rhnserver.RhnServer", MagicMock())
+    @patch(
+        "rhnpush.rhnpush_main.UploadClass.check_package_exists", Mock(return_value=(server_digest_hash, pkgs_info, digest_hash))
+    )
+    def test_packages2(self):
+        testargs = [
+            "--ca-chain=/etc/pki/trust/anchors/LOCAL-RHN-ORG-TRUSTED-SSL-CERT",
+            "-c",
+            "custom-deb-tools",
+            "--server",
+            "uyuni-srv-2206",
+            "--dir",
+            "/opt/mytools/",
+            "--username",
+            "admin",
+            "--password",
+            "admin"
+        ]
+        with patch.object(sys, "argv", testargs), patch(
+                "rhnpush.uploadLib.call", Mock(side_effect=["83x09d549bd717d63cc46c3750474a4122c3508bd3c5cae8915f8275b7d9f1cd2c0",0])
+        ) as submit, patch("rhnpush.rhnpush_main.UploadClass.package", Mock(return_value=0)) as package:
+
+            option_parser = OptionParser(option_list=TestUpload.options_table, usage="%prog [OPTION] [<package>]")
+            from rhnpush import rhnpush_confmanager
+            true_list = ['usage', 'test', 'source', 'header', 'nullorg', 'newest',
+                         'nosig', 'force', 'list', 'stdin', 'new_cache',
+                         'extended_test', 'no_session_caching', 'tolerant']
+            manager = rhnpush_confmanager.ConfManager(option_parser, true_list)
+            options = manager.get_config()
+            self._upload.options = options
+
+            if options.dir and not options.stdin:
+                self._upload.directory()
+
+            elif options.stdin and not options.dir:
+                self._upload.readStdin()
+
+            elif options.dir and options.stdin:
+                self._upload.readStdin()
+                self._upload.directory()
+
+            self._upload.packages()
+            assert package.called
+            #assert submit.called
