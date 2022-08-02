@@ -137,7 +137,7 @@ def main():
             upload.die(1, "Must specify a channel for --list to work")
         upload.list()
         return
-
+    import pdb; pdb.set_trace()
     if options.dir and not options.stdin:
         upload.directory()
 
@@ -361,7 +361,6 @@ class UploadClass(uploadLib.UploadClass):
         # a little fault tolarence is in order
         random.seed()
         tries = 3
-
         # satellites < 4.1.0 are no more supported
         if sys.version_info[0] == 3:
             pack_exist_check = headerinfo.get('X-RHN-Check-Package-Exists')
@@ -369,7 +368,7 @@ class UploadClass(uploadLib.UploadClass):
             pack_exist_check = headerinfo.getheader('X-RHN-Check-Package-Exists')
         if not pack_exist_check:
             self.die(-1, "Pushing to Satellite < 4.1.0 is not supported.")
-
+        import pdb; pdb.set_trace()
         (server_digest_hash, pkgs_info, digest_hash) = self.check_package_exists()
 
         for pkg in self.files:
@@ -497,6 +496,7 @@ class UploadClass(uploadLib.UploadClass):
                 self.warn(-1, "Could not read file %s" % pkg)
                 continue
             try:
+                import pdb; pdb.set_trace()
                 a_pkg = package_from_filename(pkg)
                 a_pkg.read_header()
                 a_pkg.payload_checksum()

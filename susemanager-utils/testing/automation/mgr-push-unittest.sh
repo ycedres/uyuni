@@ -27,6 +27,6 @@ echo "Loading ${VPRODUCT}"
 GITROOT=`readlink -f ${HERE}/../../../`
 
 cd $GITROOT/client/tools/mgr-push
-make DOCKER_REGISTRY="${REGISTRY}" DOCKER_IMAGE="${PGSQL_CONTAINER}" -f Makefile.python docker_shell
+make DOCKER_REGISTRY="${REGISTRY}" DOCKER_IMAGE="${PGSQL_CONTAINER}" -f Makefile.python docker_pytest
 
 exit $?
