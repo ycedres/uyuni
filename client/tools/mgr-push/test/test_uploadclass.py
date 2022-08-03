@@ -389,5 +389,5 @@ class TestUpload(TestCase):
                 self._upload.directory()
 
             self._upload.packages()
-            assert package.called
-            #assert submit.called
+            package.assert_called_with("cadabra_2.46-4_amd64.deb", "sha256", "ece4eedf7a5c65396d136b5765226e2c8b10f268c744b0ab1fa2625e35384a00")
+
