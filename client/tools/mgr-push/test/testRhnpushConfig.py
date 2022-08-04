@@ -13,7 +13,7 @@
 # in this software or its documentation.
 #
 
-import rhnpush_config
+from rhnpush import rhnpush_config
 import unittest
 
 

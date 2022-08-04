@@ -18,13 +18,13 @@ import unittest
 import zipfile
 
 # test import
-import archive
+from rhnpush import archive
 
 # globals ----------------------------------------------------------------
 
-TEST_ARCHIVE = "/tmp/test_archive.zip"
-TEST_DIR = "./test_archive/foo/bar"
-TEST_FILE = "test_file"
+TEST_ARCHIVE = "/tmp/test_archive.zip".encode("utf-8")
+TEST_DIR = "./test_archive/foo/bar".encode('utf-8')
+TEST_FILE = "test_file".encode('utf-8')
 TEST_FILE_PATH = os.path.join(TEST_DIR, TEST_FILE)
 
 TEST_CONTENTS = """

@@ -30,8 +30,7 @@ endef
 
 __pytest ::
 	$(call setup_structure)
-	cd test
-	-pytest --disable-warnings --tb=native --color=yes -v
+	-pytest --disable-warnings --tb=native --color=yes -v test/test_uploadclass.py
 	$(call undo_setup_structure)
 
 __pylint ::
