@@ -2,11 +2,37 @@ THIS_MAKEFILE := $(realpath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(dir $(THIS_MAKEFILE))
 include $(CURRENT_DIR)../../../rel-eng/Makefile.python
 
+MGR-PUSH_ROOT_DIR = /manager/client/tools/mgr-push
+RHNPUSH_PACKET_DIR = $(MGR-PUSH_ROOT_DIR)/rhnpush
+
 # Docker tests variables
+DOCKER_REF            = $(DOCKER_REGISTRY)/$(DOCKER_IMAGE)
 DOCKER_CONTAINER_BASE = systemsmanagement/uyuni/master/docker/containers/uyuni-master
 DOCKER_REGISTRY       = registry.opensuse.org
-DOCKER_RUN_EXPORT     = "PYTHONPATH=$PYTHONPATH"
+DOCKER_RUN_EXPORT     = "PYTHONPATH=/manager/client/tools/mgr-push/rhnpush:/manager/python/:/manager/client/tools/mgr-push:/manager/client/rhel/spacewalk-client-tools/src/"
 DOCKER_VOLUMES        = -v "$(CURDIR)/../../../:/manager"
+
+define setup_structure
+    mv $(MGR-PUSH_ROOT_DIR)/rhnpush $(MGR-PUSH_ROOT_DIR)/rhnpush_wrapper
+    mkdir $(RHNPUSH_PACKET_DIR)
+    cd $(RHNPUSH_PACKET_DIR)
+    mv archive.py connection.py rhnpush_cache.py rhnpush_config.py rhnpush_confmanager.py rhnpush_main.py rhnpush_v2.py rpm2mpm.py uploadLib.py utils.py $(RHNPUSH_PACKET_DIR)
+    touch $(RHNPUSH_PACKET_DIR)/__init__.py
+endef
+
+define undo_setup_structure
+    rm $(RHNPUSH_PACKET_DIR)/__init__.py
+    rm -rf $(RHNPUSH_PACKET_DIR)/__pycache__
+    mv $(RHNPUSH_PACKET_DIR)/*.py $(MGR-PUSH_ROOT_DIR)
+    rmdir $(RHNPUSH_PACKET_DIR)
+    mv $(MGR-PUSH_ROOT_DIR)/rhnpush_wrapper $(MGR-PUSH_ROOT_DIR)/rhnpush
+endef
+
+__pytest ::
+	$(call setup_structure)
+	cd test
+	-pytest --disable-warnings --tb=native --color=yes -v
+	$(call undo_setup_structure)
 
 __pylint ::
 	$(call update_pip_env)
@@ -14,6 +40,10 @@ __pylint ::
 
 docker_pylint ::
 	docker run --rm -e $(DOCKER_RUN_EXPORT) $(DOCKER_VOLUMES) $(DOCKER_REGISTRY)/$(DOCKER_CONTAINER_BASE)-pgsql /bin/sh -c "cd /manager/client/tools/mgr-push; make -f Makefile.python __pylint"
+
+docker_pytest ::
+	docker pull $(DOCKER_REF)
+	docker run -e $(DOCKER_RUN_EXPORT) $(DOCKER_VOLUMES) $(DOCKER_REF) /bin/sh -c "cd /manager/client/tools/mgr-push; make -f Makefile.python __pytest"
 
 docker_shell ::
 	docker run -t -i --rm -e $(DOCKER_RUN_EXPORT) $(DOCKER_VOLUMES) $(DOCKER_REGISTRY)/$(DOCKER_CONTAINER_BASE)-pgsql /bin/bash
