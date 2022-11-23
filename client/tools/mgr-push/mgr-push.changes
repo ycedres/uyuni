@@ -1,3 +1,13 @@
+-------------------------------------------------------------------
+Wed Nov 23 08:42:34 WET 2022 - Yeray Gutiérrez Cedrés <yeray.gutierrez@suse.com>
+
+- update rhnpush changelog
+- Add script for running tests locally into a container
+-  Tests for rhnpush Debian package handling
+- Fixes some of the old tests in rhnpush
+-  Reorganize rhnpush package structure
+- Properly handling of Debian packages in rhnpush
+
 - Allow rhnpush to handle Debian packages
 
 -------------------------------------------------------------------
